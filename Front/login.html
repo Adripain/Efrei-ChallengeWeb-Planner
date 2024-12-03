@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - EFREI</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="header">
+                <img src="assets/logo-efrei.png" alt="EFREI Logo" class="school-logo">
+                <h1>Connexion</h1>
+            </div>
+            <form action="/login" method="POST">
+                <div class="form-group">
+                    <label for="email">Adresse e-mail</label>
+                    <input type="email" id="email" name="email" placeholder="Entrer votre e-mail" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" name="password" placeholder="Entrer votre mot de passe" required>
+                </div>
+                <button type="submit" class="btn">Se connecter</button>
+                <p class="signup-link">
+                    Pas encore inscrit ? <a href="register.html">Créer un compte</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
