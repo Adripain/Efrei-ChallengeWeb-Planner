@@ -1,33 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - EFREI</title>
+    <title>Connexion</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="auth-container">
-        <div class="auth-card">
-            <div class="header">
-                <img src="assets/logo-efrei.png" alt="Logo" class="school-logo">
-                <h1>Connexion</h1>
+        <h1>Connexion</h1>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="email">Email :</label>
+                <input type="email" id="email" name="email" required>
             </div>
-            <form action="/login" method="POST">
-                <div class="form-group">
-                    <label for="email">Adresse e-mail</label>
-                    <input type="email" id="email" name="email" placeholder="Entrer votre e-mail" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Mot de passe</label>
-                    <input type="password" id="password" name="password" placeholder="Entrer votre mot de passe" required>
-                </div>
-                <button type="submit" class="btn">Se connecter</button>
-                <p class="signup-link">
-                    Pas encore inscrit ? <a href="register.html">Créer un compte</a>
-                </p>
-            </form>
-        </div>
+            <div class="form-group">
+                <label for="password">Mot de passe :</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn">Se connecter</button>
+        </form>
+        <p>Pas encore inscrit ? <a href="register.html">Créer un compte</a></p>
     </div>
+    <script src="auth.js" defer></script>
 </body>
 </html>
