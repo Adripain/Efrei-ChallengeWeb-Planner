@@ -32,7 +32,7 @@ body {
 }
 
 .auth-card h1 {
-    color: #003366; /* Rouge EFREI */
+    color: #003366;
 }
 
 .form-group {
@@ -57,7 +57,7 @@ body {
 .btn {
     width: 100%;
     padding: 10px;
-    background: #003366; /* Rouge EFREI */
+    background: #003366;
     color: white;
     border: none;
     border-radius: 5px;
@@ -67,7 +67,7 @@ body {
 }
 
 .btn:hover {
-    background: #003366; /* Rouge foncé */
+    background: #003366;
 }
 
 .signup-link {
@@ -77,7 +77,7 @@ body {
 }
 
 .signup-link a {
-    color: #003366; /* Bleu EFREI */
+    color: #003366;
     text-decoration: none;
 }
 
@@ -100,7 +100,7 @@ body {
 
 h1 {
     text-align: center;
-    color: #d71920; /* Rouge EFREI */
+    color: #d71920;
 }
 
 .columns {
@@ -120,7 +120,7 @@ h1 {
 }
 
 h2 {
-    color: #003366; /* Bleu EFREI */
+    color: #003366;
     text-align: center;
 }
 
@@ -144,7 +144,12 @@ h2 {
     background: #c4e3f3;
 }
 
-/* User management styles */
+.task .actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
 .user-container {
     max-width: 800px;
     margin: 50px auto;
