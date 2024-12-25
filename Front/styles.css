@@ -54,22 +54,6 @@ body {
     font-size: 16px;
 }
 
-.btn {
-    width: 100%;
-    padding: 10px;
-    background: #003366;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-.btn:hover {
-    background: #003366;
-}
-
 .signup-link {
     text-align: center;
     margin-top: 10px;
@@ -100,7 +84,7 @@ body {
 
 h1 {
     text-align: center;
-    color: #d71920;
+    color: #ffffff;
 }
 
 .columns {
@@ -124,31 +108,6 @@ h2 {
     text-align: center;
 }
 
-.task-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.task {
-    background: #d9edf7;
-    border: 1px solid #bce8f1;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    cursor: grab;
-    transition: background 0.3s;
-}
-
-.task:hover {
-    background: #c4e3f3;
-}
-
-.task .actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
-}
 
 .user-container {
     max-width: 800px;
@@ -193,4 +152,155 @@ button.edit {
 
 button.delete {
     background: #d71920;
+}
+
+/* Structure globale */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Bandeau supérieur */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+}
+
+/* Conteneur principal */
+.dashboard-container {
+    display: flex;
+    flex: 1;
+}
+
+/* Colonne latérale */
+.sidebar {
+    width: 250px;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+    overflow-y: auto;
+}
+
+.sidebar h2 {
+    margin-top: 0;
+}
+
+.project-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.project-list li {
+    padding: 10px;
+    background-color: #e9ecef;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.project-list li:hover {
+    background-color: #dee2e6;
+}
+
+/* Section principale */
+.main-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+/* Colonnes des tâches */
+.columns {
+    display: flex;
+    gap: 20px;
+}
+
+.column {
+    flex: 1;
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.column h3 {
+    margin-top: 0;
+    text-align: center;
+}
+
+.task-list {
+    list-style: none;
+    padding: 0;
+}
+
+.task {
+    padding: 10px;
+    background-color: #e9ecef;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    cursor: grab;
+}
+
+.task:active {
+    cursor: grabbing;
+    opacity: 0.8;
+}
+
+/* Boutons */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #b21f2d;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 400px;
+    text-align: center;
+}
+
+.hidden {
+    display: none;
 }
