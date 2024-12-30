@@ -1,40 +1,50 @@
-const ENDPOINT = "http://127.0.0.1:5000"; // Adresse de l'API
+const ENDPOINT = "http://127.0.0.1:8000"; // localhost:8000
 let currentProject = null;
 
-// Chargement des projets depuis l'API
+// make request to api
+async function apiFetch(endpoint, options = {}) {
+    const token = localStorage.getItem("token");
+    const headers = {
+        "Content-Type": "application/json",
+        ...options.headers,
+    };
+    if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${ENDPOINT}${endpoint}`, { ...options, headers });
+    if (!response.ok) {
+        throw new Error(`API error: ${response.statusText}`);
+    }
+    return response.json();
+}
+
+// load a project from api
 async function loadProjects() {
     try {
-        const response = await fetch(`${ENDPOINT}/project/all`);
-        const projects = await response.json();
+        const user = await apiFetch("/api/users/me");
+        const projectUrls = user.projects;
+
+        const projects = await Promise.all(projectUrls.map((url) => apiFetch(url)));
+
         const projectList = document.getElementById("project-list");
         projectList.innerHTML = "";
-
-        projects.forEach(project => {
-            const listItem = document.createElement("li");
-            listItem.textContent = project.name;
-            listItem.dataset.id = project.id;
-
-            // Gestion du clic pour afficher les tâches du projet
-            listItem.addEventListener("click", () => {
-                currentProject = project;
-                loadTasks(project.id);
-                document.getElementById("board-section").classList.remove("hidden");
-                document.getElementById("project-title").textContent = `Projet : ${project.name}`;
-            });
-
-            projectList.appendChild(listItem);
+        projects.forEach((project) => {
+            const li = document.createElement("li");
+            li.textContent = project.name;
+            li.dataset.id = project["@id"];
+            li.addEventListener("click", () => loadProjectTasks(project));
+            projectList.appendChild(li);
         });
-    } catch (error) {
-        console.error("Erreur lors du chargement des projets :", error);
+    } catch (err) {
+        console.error("Failed to load projects:", err);
     }
 }
 
-// Création d'un projet
+// creare
 async function addProject(projectName) {
     try {
-        await fetch(`${ENDPOINT}/project/create`, {
+        await apiFetch("/api/projects", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: projectName }),
         });
         loadProjects();
@@ -43,13 +53,11 @@ async function addProject(projectName) {
     }
 }
 
-// Suppression d'un projet
+// delete
 async function deleteProject(projectId) {
     try {
-        await fetch(`${ENDPOINT}/project/delete`, {
+        await apiFetch(`/api/projects/${projectId}`, {
             method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: projectId }),
         });
         loadProjects();
     } catch (error) {
@@ -57,35 +65,37 @@ async function deleteProject(projectId) {
     }
 }
 
-// Chargement des tâches d'un projet
+// cload tasks for a project
 async function loadTasks(projectId) {
     try {
-        const response = await fetch(`${ENDPOINT}/project/${projectId}/tasks`);
-        const tasks = await response.json();
+        const project = await apiFetch(`/api/projects/${projectId}`);
+        const tasks = project.categories.flatMap((category) => category.tasks);
 
-        // Réinitialisation des listes
-        ["todo", "in-progress", "done"].forEach(status => {
+        ["todo", "in-progress", "done"].forEach((status) => {
             document.getElementById(`${status}-list`).innerHTML = "";
         });
 
-        tasks.forEach(task => {
+        tasks.forEach((task) => {
             const taskElement = createTaskElement(task);
-            document.getElementById(`${task.status}-list`).appendChild(taskElement);
+            document.getElementById(`${task.completed ? "done" : "todo"}-list`).appendChild(taskElement);
         });
     } catch (error) {
         console.error("Erreur lors du chargement des tâches :", error);
     }
 }
 
-// Création d'une tâche
-async function addTask(taskName) {
+// create a new task
+async function addTask(taskName, categoryId) {
     try {
-        const response = await fetch(`${ENDPOINT}/project/${currentProject.id}/task/create`, {
+        const response = await apiFetch("/api/tasks", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: taskName }),
+            body: JSON.stringify({
+                title: taskName,
+                completed: false,
+                category: categoryId, // "/api/categories/1"
+            }),
         });
-        const newTask = await response.json();
+        const newTask = response;
         const taskElement = createTaskElement(newTask);
         document.getElementById("todo-list").appendChild(taskElement);
     } catch (error) {
@@ -93,30 +103,31 @@ async function addTask(taskName) {
     }
 }
 
-// Création d'un élément de tâche
+// create a new task
 function createTaskElement(task) {
     const taskElement = document.createElement("li");
     taskElement.classList.add("task");
     taskElement.dataset.id = task.id;
-    taskElement.textContent = task.name;
+    taskElement.textContent = task.title;
     return taskElement;
 }
 
 // Gestion de la déconnexion
-document.getElementById("logout-btn").addEventListener("click", async () => {
-    try {
-        await fetch(`${ENDPOINT}/auth/logout`, { method: "POST" });
-        window.location.href = "login.html"; // Redirige vers la page de connexion
-    } catch (error) {
-        console.error("Erreur lors de la déconnexion :", error);
-    }
+document.getElementById("logout-btn").addEventListener("click", () => {
+    localStorage.removeItem("token");
+    window.location.href = "login.html"; // logout page
 });
 
 // Initialisation
 document.addEventListener("DOMContentLoaded", () => {
+    // check auth
+    if (!localStorage.getItem("token")) {
+        window.location.href = "login.html";
+    }
+
     loadProjects();
 
-    // Gestion des modals
+    // modals
     document.getElementById("add-project-btn").addEventListener("click", () => {
         document.getElementById("project-modal").classList.remove("hidden");
     });
@@ -133,7 +144,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("task-modal").classList.add("hidden");
     });
 
-    // Gestion des formulaires
     document.getElementById("add-project-form").addEventListener("submit", async (e) => {
         e.preventDefault();
         const projectName = document.getElementById("project-name").value;
@@ -144,7 +154,8 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("add-task-form").addEventListener("submit", async (e) => {
         e.preventDefault();
         const taskName = document.getElementById("task-name").value;
-        await addTask(taskName);
+        const categoryId = document.getElementById("category-id").value; // get the category id
+        await addTask(taskName, categoryId);
         document.getElementById("task-modal").classList.add("hidden");
     });
 });
