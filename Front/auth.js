@@ -1,46 +1,58 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // function for requests from utils.js
-    async function apiFetch(endpoint, options = {}) {
-        const token = localStorage.getItem("token");
-        const headers = {
-            "Content-Type": "application/json",
-            ...options.headers,
-        };
-        if (token) {
-            headers["Authorization"] = `Bearer ${token}`;
-        }
-        const response = await fetch(`${ENDPOINT}${endpoint}`, { ...options, headers });
-        if (!response.ok) {
-            throw new Error(`API error: ${response.statusText}`);
-        }
-        return response.json();
-    }
+    const saveToken = (token) => {
+        localStorage.setItem("authToken", token);
+    };
 
-    const ENDPOINT = "http://127.0.0.1:8000"; // localhost:8000
+    const getToken = () => {
+        return localStorage.getItem("authToken");
+    };
 
-    // login form manegement
+    const getCurrentUser = async () => {
+        const token = getToken();
+        if (!token) return null;
+
+        try {
+            const response = await fetch("/api/user/me", {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                return await response.json();
+            } else {
+                console.error("Impossible de récupérer l'utilisateur connecté.");
+                return null;
+            }
+        } catch (error) {
+            console.error("Erreur lors de la récupération de l'utilisateur :", error);
+            return null;
+        }
+    };
+
     const loginForm = document.getElementById("login-form");
     if (loginForm) {
         loginForm.addEventListener("submit", async (e) => {
             e.preventDefault();
+
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
 
             try {
-                const response = await fetch(`${ENDPOINT}/api/authentication_token`, {
+                const response = await fetch("/api/login", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ email, password }),
+                    body: JSON.stringify({ username: email, password }),
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    localStorage.setItem("token", data.token); // store token in local storage
-                    window.location.href = "board.html"; // go to board.html
+                    saveToken(data.token); 
+                    window.location.href = "board.html";
                 } else {
-                    alert("Échec de la connexion. Vérifiez vos informations.");
+                    alert("Erreur de connexion. Vérifiez vos identifiants.");
                 }
             } catch (error) {
                 console.error("Erreur lors de la connexion :", error);
@@ -48,33 +60,43 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Gestion de l'inscription
+    // Gestion du formulaire d'inscription
     const registerForm = document.getElementById("register-form");
     if (registerForm) {
         registerForm.addEventListener("submit", async (e) => {
             e.preventDefault();
+
             const name = document.getElementById("name").value;
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
 
             try {
-                const response = await fetch(`${ENDPOINT}/api/users`, {
+                const response = await fetch("/api/users", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ name, email, password }),
+                    body: JSON.stringify({ username: name, password }),
                 });
 
                 if (response.ok) {
-                    alert("Compte créé avec succès. Vous pouvez maintenant vous connecter.");
-                    window.location.href = "login.html"; // go to login.html
+                    alert("Compte créé avec succès. Vous pouvez vous connecter.");
+                    window.location.href = "login.html";
                 } else {
-                    alert("Erreur lors de l'inscription. Veuillez réessayer.");
+                    alert("Erreur lors de l'inscription. Réessayez.");
                 }
             } catch (error) {
                 console.error("Erreur lors de l'inscription :", error);
             }
         });
     }
+
+
+    getCurrentUser().then((user) => {
+        if (user) {
+            console.log("CONNECTED USR:", user);
+        } else {
+            console.log("No user connected.");
+        }
+    });
 });
