@@ -7,12 +7,16 @@ document.addEventListener("DOMContentLoaded", () => {
         return localStorage.getItem("authToken");
     };
 
+    const getAPI = () => {
+        return "http://localhost:8000";
+    };
+
     const getCurrentUser = async () => {
         const token = getToken();
         if (!token) return null;
 
         try {
-            const response = await fetch("/api/user/me", {
+            const response = await fetch(getAPI() + "/api/user/me", {
                 headers: {
                     "Authorization": `Bearer ${token}`
                 }
@@ -39,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const password = document.getElementById("password").value;
 
             try {
-                const response = await fetch("/api/login", {
+                const response = await fetch(getAPI() + "/api/login", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -71,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const password = document.getElementById("password").value;
 
             try {
-                const response = await fetch("/api/users", {
+                const response = await fetch(getAPI() + "/api/users", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
